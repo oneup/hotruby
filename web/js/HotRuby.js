@@ -31,12 +31,7 @@ var HotRuby = function() {
  * @class
  * @construtor
  */
-HotRuby.StackFrame = function(opcode) {
-	/** 
-	 * opcode
-	 * @type Array 
-	 */
-	this.opcode = opcode;
+HotRuby.StackFrame = function() {
 	/** 
 	 * Stack Pointer
 	 * @type Number 
