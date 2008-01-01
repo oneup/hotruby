@@ -776,7 +776,11 @@ HotRuby.prototype = {
 };
 
 // Consts
+/** @memberof HotRuby */
 HotRuby.VM_CALL_ARGS_SPLAT_BIT = 2;
+/** @memberof HotRuby */
 HotRuby.VM_CALL_ARGS_BLOCKARG_BIT = 4;
+/** @memberof HotRuby */
 HotRuby.VM_CALL_FCALL_BIT = 8;
+/** @memberof HotRuby */
 HotRuby.VM_CALL_VCALL_BIT = 16;
