@@ -1,0 +1,45 @@
+<html>
+<head>
+	<title>Object Specific Class - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/ruby">
+obj = Object.new
+class << obj
+	def say
+		puts "To err is human,"
+	end
+end
+obj.say
+	
+def obj.say
+	puts "to forgive divine."
+end
+obj.say
+	</script>
+</head>
+<body onload="prettyPrint(); new HotRuby().runFromScriptTag('/compileRuby.cgi')">
+	<h1>Object Specific Class - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	<br />
+	<div>Source:<pre class="prettyprint">
+obj = Object.new
+class << obj
+	def say
+		puts "To err is human,"
+	end
+end
+obj.say
+	
+def obj.say
+	puts "to forgive divine."
+end
+obj.say
+</pre></div>
+</body>
+</html>

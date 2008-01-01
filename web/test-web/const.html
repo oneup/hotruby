@@ -1,0 +1,99 @@
+<html>
+<head>
+	<title>Const - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/ruby">
+class Foo
+  CONST = 'Foo'
+end
+	
+class Bar
+  CONST = 'Bar'
+  class Baz < Foo
+    puts CONST             # => "Bar"      Outer class const
+    # In this case, you have to specify if you want to see parent class const.
+    puts Foo::CONST        # => "Foo"
+  end
+end
+	
+class Foo2
+  CONST = 'Foo'
+end
+	
+CONST = 'Object'
+	
+class Bar2 < Foo2
+  puts CONST               # => "Foo"
+end
+	
+# If you specify "Object", then const in Object is searched before.
+class Object
+  class Bar2 < Foo2
+    puts CONST             # => "Object"
+  end
+end
+	
+class Foo3
+  CONST = 'Foo'
+end
+class Bar3 < Foo3
+  puts CONST               # => "Foo"
+  CONST = 'Bar'            # Define Bar's const "CONST"
+  puts CONST               # => "Bar"  (Foo::CONST is hidden)
+  puts Foo3::CONST         # => "Foo"  (You can see by "::")
+end
+	</script>
+</head>
+<body onload="prettyPrint(); new HotRuby().runFromScriptTag('/compileRuby.cgi')">
+	<h1>Const - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	<br />
+	<div>Source:<pre class="prettyprint">
+class Foo
+  CONST = 'Foo'
+end
+	
+class Bar
+  CONST = 'Bar'
+  class Baz < Foo
+    puts CONST             # => "Bar"      Outer class const
+    # In this case, you have to specify if you want to see parent class const.
+    puts Foo::CONST        # => "Foo"
+  end
+end
+	
+class Foo2
+  CONST = 'Foo'
+end
+	
+CONST = 'Object'
+	
+class Bar2 < Foo2
+  puts CONST               # => "Foo"
+end
+	
+# If you specify "Object", then const in Object is searched before.
+class Object
+  class Bar2 < Foo2
+    puts CONST             # => "Object"
+  end
+end
+	
+class Foo3
+  CONST = 'Foo'
+end
+class Bar3 < Foo3
+  puts CONST               # => "Foo"
+  CONST = 'Bar'            # Define Bar's const "CONST"
+  puts CONST               # => "Bar"  (Foo::CONST is hidden)
+  puts Foo3::CONST         # => "Foo"  (You can see by "::")
+end
+</pre></div>
+</body>
+</html>

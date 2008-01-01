@@ -1,0 +1,83 @@
+<html>
+<head>
+	<title>Do It Yourself - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/javascript">
+		function run() {
+			var src = document.getElementById("srcArea").value;
+			new HotRuby().compileAndRun("/compileRuby.cgi", src);
+		}
+	</script>
+</head>
+<body>
+	<h1>Do It Yourself - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	<br />
+	
+	<div>Source:<br />
+		<textarea id="srcArea" rows="15" style="width:100%"></textarea><br />
+		<input type="button" onclick="javascript:run()" value="Run"></input>
+	</div>
+	<br />
+	
+	<div>Implemented methods:<br />
+		<ul>
+			<li>puts()</li>
+			<li>Proc.yield()</li>
+			<li>Object.to_s()</li>
+			<li>TrueClass &amp;</li>
+			<li>TrueClass |</li>
+			<li>TrueClass ^</li>
+			<li>FalseClass &amp;</li>
+			<li>FalseClass |</li>
+			<li>FalseClass ^</li>
+			<li>Float +</li>
+			<li>Float -</li>
+			<li>Float *</li>
+			<li>Float /</li>
+			<li>Float %</li>
+			<li>Float &lt;=&gt;</li>
+			<li>Float &lt;</li>
+			<li>Float &gt;</li>
+			<li>Float &lt;=</li>
+			<li>Float &gt;=</li>
+			<li>Float ==</li>
+			<li>Float.times()</li>
+			<li>Float.to_s()</li>
+			<li>String +</li>
+			<li>String *</li>
+			<li>String ==</li>
+			<li>String [nth]</li>
+			<li>String [nth, len]</li>
+			<li>Array.length()</li>
+			<li>Array.size()</li>
+			<li>Array []</li>
+			<li>Array []=</li>
+			<li>Array.join()</li>
+			<li>Array.to_s()</li>
+			<li>Hash []</li>
+			<li>Hash []=</li>
+			<li>Hash.length()</li>
+			<li>Hash.size()</li>
+			<li>Range.each()</li>
+			<li>Range.begin()</li>
+			<li>Range.first()</li>
+			<li>Range.end()</li>
+			<li>Range.last()</li>
+			<li>Range.exclude_end?()</li>
+			<li>Range.length()</li>
+			<li>Range.size()</li>
+			<li>Range.step()</li>
+			<li>Time.initialize()</li>
+			<li>Time.to_s()</li>
+			<li>Time.to_f()</li>
+		</ul>
+	</div>
+</body>
+</html>

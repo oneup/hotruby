@@ -1,0 +1,51 @@
+<html>
+<head>
+	<title>Class - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/ruby">
+class Pi
+	def initialize
+		@a = 355.0
+	end
+	
+	def calc
+		b = 113.0
+		return @a / b
+	end
+	
+	PI = 'PI is about'
+end
+	
+puts Pi::PI
+puts Pi.new.calc
+	</script>
+</head>
+<body onload="prettyPrint(); new HotRuby().runFromScriptTag('/compileRuby.cgi')">
+	<h1>Class - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	<br />
+	<div>Source:<pre class="prettyprint">
+class Pi
+	def initialize
+		@a = 355.0
+	end
+	
+	def calc
+		b = 113.0
+		return @a / b
+	end
+	
+	PI = 'PI is about'
+end
+	
+puts Pi::PI
+puts Pi.new.calc
+</pre></div>
+</body>
+</html>

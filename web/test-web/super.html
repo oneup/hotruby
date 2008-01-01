@@ -1,0 +1,63 @@
+<html>
+<head>
+	<title>Super - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/ruby">
+class Pi
+	def initialize hoge, hoge2
+		@a = 352.0 + hoge + hoge2
+		@@c = 3
+	end
+	def getA
+		@a
+	end
+end
+	
+class Pi2 < Pi
+	def initialize hoge, hoge2
+		super
+		@b = 110.0 + @@c
+	end
+	def calc
+		getA / @b
+	end
+end
+	
+puts '335/113 = ' + Pi2.new(1, 2).calc
+	</script>
+</head>
+<body onload="prettyPrint(); new HotRuby().runFromScriptTag('/compileRuby.cgi')">
+	<h1>Super - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	<br />
+	<div>Source:<pre class="prettyprint">
+class Pi
+	def initialize hoge, hoge2
+		@a = 352.0 + hoge + hoge2
+		@@c = 3
+	end
+	def getA
+		@a
+	end
+end
+	
+class Pi2 < Pi
+	def initialize hoge, hoge2
+		super
+		@b = 110.0 + @@c
+	end
+	def calc
+		getA / @b
+	end
+end
+	
+puts '335/113 = ' + Pi2.new(1, 2).calc
+</pre></div>
+</body>
+</html>

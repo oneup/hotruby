@@ -1,0 +1,31 @@
+<html>
+<head>
+	<title>END blocks - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/ruby">
+puts "Let's start !"
+END { puts 'Bung !!!!' }
+END { puts 1 }
+END { puts 2 }
+END { puts 3 }
+	</script>
+</head>
+<body onload="prettyPrint(); new HotRuby().runFromScriptTag('/compileRuby.cgi')">
+	<h1>END blocks - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	<br />
+	<div>Source:<pre class="prettyprint">
+puts "Let's start !"
+END { puts 'Bung !!!!' }
+END { puts 1 }
+END { puts 2 }
+END { puts 3 }
+</pre></div>
+</body>
+</html>

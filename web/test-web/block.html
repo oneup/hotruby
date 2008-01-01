@@ -1,0 +1,59 @@
+<html>
+<head>
+	<title>Block - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/ruby">
+class Hoge
+	def add_msg &block
+		block.yield "is"
+	end
+end
+	
+class Foo
+	NAME = ' - William Shakespeare'
+	def main
+		pre = "Action"
+		@space = " "
+		Hoge.new.add_msg do |msg|
+			fuga = "eloquence"
+			puts pre + @space + msg + @space + fuga + NAME
+		end
+	end
+end
+	
+Foo.new.main
+	</script>
+</head>
+<body onload="prettyPrint(); new HotRuby().runFromScriptTag('/compileRuby.cgi')">
+	<h1>Block - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	<br />
+	<div>Source:<pre class="prettyprint">
+class Hoge
+	def add_msg &block
+		block.yield "is"
+	end
+end
+	
+class Foo
+	NAME = ' - William Shakespeare'
+	def main
+		pre = "Action"
+		@space = " "
+		Hoge.new.add_msg do |msg|
+			fuga = "eloquence"
+			puts pre + @space + msg + @space + fuga + NAME
+		end
+	end
+end
+	
+Foo.new.main
+</pre></div>
+</body>
+</html>

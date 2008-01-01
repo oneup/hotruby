@@ -1,0 +1,33 @@
+<html>
+<head>
+	<title>Array args - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/ruby">
+def addPrint a, b, c
+	puts a + b + c
+end
+	
+ary = [' World ', '!']
+addPrint 'Hello', *ary
+	</script>
+</head>
+<body onload="prettyPrint(); new HotRuby().runFromScriptTag('/compileRuby.cgi')">
+	<h1>Array args - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	<br />
+	<div>Source:<pre class="prettyprint">
+def addPrint a, b, c
+	puts a + b + c
+end
+	
+ary = [' World ', '!']
+addPrint 'Hello', *ary
+</pre></div>
+</body>
+</html>

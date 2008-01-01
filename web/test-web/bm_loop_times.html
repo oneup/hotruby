@@ -1,0 +1,47 @@
+<html>
+<head>
+	<title>Benchmark - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/ruby">
+startTime = Time.new.to_f
+	
+sum = ""
+50000.times{|e| sum += e.to_s}
+	
+endTime = Time.new.to_f
+puts (endTime - startTime).to_s + ' sec'
+	</script>
+</head>
+<body onload="prettyPrint(); new HotRuby().runFromScriptTag('/compileRuby.cgi')">
+	<h1>Benchmark - HotRuby(Ruby on JavaScript)</h1>
+	
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	
+	<br />
+	<div>Source:<pre class="prettyprint">
+startTime = Time.new.to_f
+	
+sum = ""
+50000.times{|e| sum += e.to_s}
+	
+endTime = Time.new.to_f
+puts (endTime - startTime).to_s + ' sec'
+</pre></div>
+	
+	<div>Comparison:</div>
+	<div class="result" style="color:black">
+		Results at my machine.<br />
+		<table>
+		<tr><td>&nbsp;&nbsp;</td><td>Opera 9.25:</td><td align="right">6.767 sec</td></tr>
+		<tr><td></td><td>Ruby 1.9.0:</td><td align="right">12.051 sec</td></tr>
+		</table>
+		HotRuby is <strong>78% faster</strong> than Ruby(YARV).
+	</div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<html>
+<head>
+	<title>Inner method - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
+	<script type="text/javascript" src="../js/ext-base.js"></script>
+	<script type="text/javascript" src="../js/HotRuby.js"></script>
+	<script type="text/javascript" src="../js/NativeMethods.js"></script>
+	
+	<script type="text/ruby">
+$a = 'Make everything '
+def init
+	def msg
+		c = ', but not simpler.'
+		return $a + very_important + c
+	end
+	def very_important
+		'as simple as possible'
+	end
+end
+init
+puts msg + ' - Albert Einstein'
+	</script>
+</head>
+<body onload="prettyPrint(); new HotRuby().runFromScriptTag('/compileRuby.cgi')">
+	<h1>Inner method - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result"></div>
+	<br />
+	<div>Source:<pre class="prettyprint">
+$a = 'Make everything '
+def init
+	def msg
+		c = ', but not simpler.'
+		return $a + very_important + c
+	end
+	def very_important
+		'as simple as possible'
+	end
+end
+init
+puts msg + ' - Albert Einstein'
+</pre></div>
+</body>
+</html>
