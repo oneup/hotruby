@@ -15,14 +15,13 @@ var HotRuby = function() {
 	 * @type Array 
 	 */
 	this.endBlocks = [];
-	/** 
-	 * Debug DOM
-	 * @type HTMLElement 
-	 */
-	this.debugDom = document.getElementById("debug");
-
-	if (this.debugDom == null) {
-		this.debugDom = document.body;
+	
+	this.supportRhino();
+	if(!HotRuby.isRhino) {
+		this.debugDom = document.getElementById("debug");
+		if (this.debugDom == null) {
+			this.debugDom = document.body;
+		}
 	}
 };
 
@@ -722,10 +721,14 @@ HotRuby.prototype = {
 	 * @param {String} str
 	 */
 	printDebug : function(str) {
-		var div = document.createElement("div");
-		var text = document.createTextNode(str);
-		div.appendChild(text);
-		this.debugDom.appendChild(div);
+		if(HotRuby.isRhino) {
+			print(str);	
+		} else {
+			var div = document.createElement("div");
+			var text = document.createTextNode(str);
+			div.appendChild(text);
+			this.debugDom.appendChild(div);
+		}
 	},
 
 	/**
@@ -767,6 +770,15 @@ HotRuby.prototype = {
 			},
 			"src=" + encodeURIComponent(src)
 		);
+	},
+	
+	supportRhino : function() {
+		HotRuby.isRhino = (typeof(alert) == "undefined");
+		if (HotRuby.isRhino) {
+			alert = function(str) {
+				print(str);
+			}
+		}
 	}
 };
 
