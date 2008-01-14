@@ -9,6 +9,7 @@ package {
 }
 
 import flash.display.*;
+import flash.utils.*;
 import flash.text.*;
 
 var _root = null;
