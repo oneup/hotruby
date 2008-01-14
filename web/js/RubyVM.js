@@ -647,10 +647,10 @@ HotRuby.prototype = {
 				return obj.__className;
 			case "number" :
 				return "Float";
-			case "string" :
-				return "String";
-			case "boolean" :
-				return obj ? "TrueClass" : "FalseClass";
+//			case "string" :
+//				return "String";
+//			case "boolean" :
+//				return obj ? "TrueClass" : "FalseClass";
 			default :
 				throw "[getClassName] unknown type : " + typeof(obj);
 		}
@@ -834,3 +834,4 @@ HotRuby.VM_CALL_ARGS_BLOCKARG_BIT = 4;
 HotRuby.VM_CALL_FCALL_BIT = 8;
 /** @memberof HotRuby */
 HotRuby.VM_CALL_VCALL_BIT = 16;
+
