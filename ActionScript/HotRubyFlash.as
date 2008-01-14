@@ -213,27 +213,27 @@ HotRuby.prototype = {
 			if (!(cmd instanceof Array))
 				continue;
 			
-			//trace("cmd = " + cmd[0]);
+			//console.log("cmd = " + cmd[0] + ", sp = " + sf.sp);
 			switch (cmd[0]) {
 				case "jump" :
 					ip = opcode.label2ip[cmd[1]];
 					break;
 				case "branchif" :
 					var val = sf.stack[--sf.sp];
-					if(val != null && val != false) {
+					if(val != this.nilObj && val != this.falseObj) {
 						ip = opcode.label2ip[cmd[1]];
 					}
 					break;
 				case "branchunless" :
 					var val = sf.stack[--sf.sp];
-					if(val == null || val == false) {
+					if(val == this.nilObj || val == this.falseObj) {
 						ip = opcode.label2ip[cmd[1]];
 					}
 					break;
 				case "leave" :
 					return;
 				case "putnil" :
-					sf.stack[sf.sp++] = null;
+					sf.stack[sf.sp++] = this.nilObj;
 					break;
 				case "putself" :
 					sf.stack[sf.sp++] = sf.self;
@@ -259,7 +259,7 @@ HotRuby.prototype = {
 					break;
 				case "newarray" :
 					var value = this.createRubyArray(sf.stack.slice(sf.sp - cmd[1], sf.sp));
-					sf.sp -= value.length;
+					sf.sp -= value.__native.length;
 					sf.stack[sf.sp++] = value;
 					break;
 				case "duparray" :
@@ -267,9 +267,9 @@ HotRuby.prototype = {
 					break;
 				case "expandarray" :
 					var ary = sf.stack[--sf.sp];
-					if(ary instanceof Array) {
+					if(typeof(ary) == "object" && ary.__className == "Array") {
 						for(var i=0; i<cmd[1]; i++) {
-							sf.stack[sf.sp++] = ary[i];						
+							sf.stack[sf.sp++] = ary.__native[i];						
 						}
 						if(cmd[2] && 1) {
 							// TODO
@@ -283,7 +283,7 @@ HotRuby.prototype = {
 					} else {
 						sf.stack[sf.sp++] = ary;
 						for (var i = 0;i < cmd[1] - 1; i++) {
-							sf.stack[sf.sp++] = null;
+							sf.stack[sf.sp++] = this.nilObj;
 						}
 					}
 					break;
@@ -395,7 +395,7 @@ HotRuby.prototype = {
 					var args = sf.stack.slice(sf.sp - cmd[2], sf.sp);
 					sf.sp -= cmd[2];
 					var recver = sf.stack[--sf.sp];
-					if (recver == null)
+					if (recver == null || recver == this.nilObj)
 						recver = sf.self;
 					if(cmd[3] instanceof Array)
 						cmd[3] = this.createRubyProc(cmd[3], sf);
@@ -418,7 +418,7 @@ HotRuby.prototype = {
 					var obj = sf.stack[--sf.sp];
 					if(sf.cbaseObj != null)
 						obj = sf.cbaseObj;
-					if (obj == null) {
+					if (obj == null || obj == this.nilObj) {
 						sf.classObj[cmd[1]] = cmd[2];
 					} else {
 						if (!("__methods" in obj))
@@ -431,8 +431,8 @@ HotRuby.prototype = {
 					break;
 				case "defineclass" :
 					var parentClass = sf.stack[--sf.sp];
-					var isRedefine = (parentClass == false);
-					if(parentClass == null)
+					var isRedefine = (parentClass == this.falseObj);
+					if(parentClass == null || parentClass == this.nilObj)
 						parentClass = this.classes.Object;
 					var cbaseObj = sf.stack[--sf.sp];
 					if(cmd[3] == 0) {
@@ -505,7 +505,7 @@ HotRuby.prototype = {
 		} else {
 			// Search method in object
 			//if (recver != null && recver.__methods != null) {
-			if (recver != null && "__methods" in recver) {
+			if (recver != null && typeof(recver) == "object" && "__methods" in recver) {
 				func = recver.__methods[methodName];
 			}
 			if (func == null) {
@@ -561,7 +561,7 @@ HotRuby.prototype = {
 
 		// Splat array args
 		if (type & HotRuby.VM_CALL_ARGS_SPLAT_BIT) {
-			args = args.concat(args.pop());
+			args = args.concat(args.pop().__native);
 		}
 		
 		// Exec method
@@ -592,9 +592,9 @@ HotRuby.prototype = {
 	 * @private
 	 */
 	setConstant : function(sf, classObj, constName, constValue) {
-		if (classObj == null) {
+		if (classObj == null || classObj == this.nilObj) {
 			classObj = sf.classObj;
-		} else if (classObj == false) {
+		} else if (classObj == false || classObj == this.falseObj) {
 			// TODO
 			throw "[setConstant] Not implemented";
 		}
@@ -613,7 +613,7 @@ HotRuby.prototype = {
 	 * @private
 	 */
 	getConstant : function(sf, classObj, constName) {
-		if (classObj == null) {
+		if (classObj == null || classObj == this.nilObj) {
 			var isFound = false;
 			// Search outer(parentStackFrame)
 			for (var checkSF = sf;!isFound; checkSF = checkSF.parentStackFrame) {
@@ -639,11 +639,11 @@ HotRuby.prototype = {
 			if (!isFound) {
 				classObj = this.classes.Object;
 			}
-		} else if (classObj == false) {
+		} else if (classObj == false || classObj == this.falseObj) {
 			// TODO
 			throw "[setConstant] Not implemented";
 		}
-		if (classObj == null)
+		if (classObj == null || classObj == this.nilObj)
 			throw "[getConstant] Cannot find constant : " + constName;
 		// Const in <global> belongs to Object
 		if (classObj.__className == "<global>")
@@ -751,7 +751,7 @@ HotRuby.prototype = {
 			__instanceVars : {
 				first : first,
 				last : last,
-				exclude_end : exclude_end
+				exclude_end : exclude_end ? this.trueObj : this.falseObj
 			}
 		};
 	},
@@ -861,7 +861,7 @@ HotRuby.prototype.classes = {
 			}
 			for(var i=0; i<args.length; i++) {
 				var obj = args[i];
-				if(obj == null) {
+				if(obj == null || obj == this.nilObj) {
 					this.printDebug("nil");
 					continue;
 				}
@@ -981,23 +981,23 @@ HotRuby.prototype.classes = {
 		},
 		
 		"<" : function(recver, args) {
-			return recver < args[0];
+			return recver < args[0] ? this.trueObj :  this.falseObj;
 		},
 
 		">" : function(recver, args) {
-			return recver > args[0];
+			return recver > args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"<=" : function(recver, args) {
-			return recver <= args[0];
+			return recver <= args[0] ? this.trueObj :  this.falseObj;
 		},
 
 		">=" : function(recver, args) {
-			return recver >= args[0];
+			return recver >= args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"==" : function(recver, args) {
-			return recver == args[0];
+			return recver == args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"times" : function(recver, args, sf) {
@@ -1043,23 +1043,23 @@ HotRuby.prototype.classes = {
 		},
 		
 		"<" : function(recver, args) {
-			return recver < args[0];
+			return recver < args[0] ? this.trueObj :  this.falseObj;
 		},
 
 		">" : function(recver, args) {
-			return recver > args[0];
+			return recver > args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"<=" : function(recver, args) {
-			return recver <= args[0];
+			return recver <= args[0] ? this.trueObj :  this.falseObj;
 		},
 
 		">=" : function(recver, args) {
-			return recver >= args[0];
+			return recver >= args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"==" : function(recver, args) {
-			return recver == args[0];
+			return recver == args[0] ? this.trueObj :  this.falseObj;
 		}
 	},
 
@@ -1077,7 +1077,7 @@ HotRuby.prototype.classes = {
 		},
 		
 		"==" : function(recver, args) {
-			return recver.__native == args[0].__native;
+			return recver.__native == args[0].__native ? this.trueObj : this.falseObj;
 		},
 		
 		"[]" : function(recver, args) {
@@ -1152,7 +1152,7 @@ HotRuby.prototype.classes = {
 	
 	"Range" : {
 		"each" : function(recver, args, sf) {
-			if(recver.__instanceVars.exclude_end) {
+			if(recver.__instanceVars.exclude_end == this.trueObj) {
 				for (var i = recver.__instanceVars.first;i < recver.__instanceVars.last; i++) {
 					this.invokeMethod(args[0], "yield", [i], sf, 0, false);
 					sf.sp--;
@@ -1187,13 +1187,13 @@ HotRuby.prototype.classes = {
 		
 		"length" : function(recver) {
 			with(recver.__instanceVars) {
-				return (last - first + (exclude_end ? 0 : 1));
+				return (last - first + (exclude_end == this.trueObj ? 0 : 1));
 			}
 		},
 		
 		"size" : function(recver) {
 			with(recver.__instanceVars) {
-				return (last - first + (exclude_end ? 0 : 1));
+				return (last - first + (exclude_end == this.trueObj ? 0 : 1));
 			}
 		},
 		
@@ -1208,7 +1208,7 @@ HotRuby.prototype.classes = {
 				proc = args[1];
 			}
 			
-			if(recver.__instanceVars.exclude_end) {
+			if(recver.__instanceVars.exclude_end == this.trueObj) {
 				for (var i = recver.__instanceVars.first;i < recver.__instanceVars.last; i += step) {
 					this.invokeMethod(proc, "yield", [i], sf, 0, false);
 					sf.sp--;
@@ -1228,7 +1228,7 @@ HotRuby.prototype.classes = {
 		},
 		
 		"to_s" : function(recver) {
-			return recver.__instanceVars.date.toString();
+			return this.createRubyString(recver.__instanceVars.date.toString());
 		},
 		
 		"to_f" : function(recver) {

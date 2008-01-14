@@ -224,7 +224,7 @@ HotRuby.prototype.classes = {
 		},
 		
 		"==" : function(recver, args) {
-			return recver.__native == args[0].__native ? this.trueObj :  this.falseObj;
+			return recver.__native == args[0].__native ? this.trueObj : this.falseObj;
 		},
 		
 		"[]" : function(recver, args) {

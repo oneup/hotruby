@@ -196,7 +196,7 @@ HotRuby.prototype = {
 			if (!(cmd instanceof Array))
 				continue;
 			
-			console.log("cmd = " + cmd[0] + ", sp = " + sf.sp);
+			//console.log("cmd = " + cmd[0] + ", sp = " + sf.sp);
 			switch (cmd[0]) {
 				case "jump" :
 					ip = opcode.label2ip[cmd[1]];
