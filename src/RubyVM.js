@@ -660,10 +660,7 @@ HotRuby.prototype = {
 			// Invoke native method
 			if(op != null)
 				throw "[invokeNativeMethod] Unsupported operator: " + op;
-			var convArgs = new Array(args.length);
-			for(var i=0; i<args.length; i++) {
-				convArgs[i] = this.rubyObjectToNative(args[i]);
-			}
+			var convArgs = this.rubyObjectAryToNativeAry(args);
 			ret = recver.__native[methodName].apply(recver, convArgs);
 		} else {
 			// Get native instance variable
@@ -698,7 +695,7 @@ HotRuby.prototype = {
 					proc.__parentStackFrame.classObj, 
 					proc.__parentStackFrame.methodName, 
 					proc.__parentStackFrame.self, 
-					arguments, 
+					hr.nativeAryToRubyObjectAry(arguments),
 					proc.__parentStackFrame,
 					true);
 			};
@@ -710,19 +707,47 @@ HotRuby.prototype = {
 	},
 	
 	/**
-	 * Convert native object to ruby object
+	 * Convert array of ruby object to array of native object
+	 * @param {Array} ary Array of ruby object
 	 */
-	nativeToRubyObject: function(ret) {
-		if(typeof(ret) == "number") {
-			return ret;	
-		} else if(typeof(ret) == "string") {
-			return this.createRubyString(ret);	
-		} else {
-			return {
-				__className: "NativeObject",
-				__native: ret
-			};
+	rubyObjectAryToNativeAry: function(ary) {
+		var convAry = new Array(ary.length);
+		for(var i=0; i<ary.length; i++) {
+			convAry[i] = this.rubyObjectToNative(ary[i]);
 		}
+		return convAry;
+	},
+	
+	/**
+	 * Convert native object to ruby object
+	 * @param v native object
+	 */
+	nativeToRubyObject: function(v) {
+		if(typeof(v) == "number") {
+			return v;	
+		}
+		if(typeof(v) == "string") {
+			return this.createRubyString(v);
+		}
+		if(typeof(v) == "object" && v instanceof Array) {
+			return this.createRubyArray(v);
+		}
+		return {
+			__className: "NativeObject",
+			__native: v
+		};
+	},
+	
+	/**
+	 * Convert array of native object to array of ruby object
+	 * @param {Array} ary Array of native object
+	 */
+	nativeAryToRubyObjectAry: function(ary) {
+		var convAry = new Array(ary.length);
+		for(var i=0; i<ary.length; i++) {
+			convAry[i] = this.nativeToRubyObject(ary[i]);
+		}
+		return convAry;
 	},
 	
 	/**
