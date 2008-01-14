@@ -1,0 +1,6 @@
+HowToDebug		2008/01/14 17:54
+
+Build with buildHotRubyDebug.bat
+Run C:\Program Files\flex2_sdk_hf1\bin\fdb.exe
+Enter "run file:///C:/Documents/my/2007/HotRuby/ActionScript/HotRuby.swf"
+Enter "continue"

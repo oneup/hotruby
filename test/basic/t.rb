@@ -1,7 +1,7 @@
 class C
   def m
     1.times{
-    	print("Hello");
+    	puts "Hello";
     }
   end
 end

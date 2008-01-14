@@ -8,17 +8,21 @@ HotRuby.prototype.classes = {
 			}
 			for(var i=0; i<args.length; i++) {
 				var obj = args[i];
-				if(obj == null) {
+				if(obj == null || obj == this.nilObj) {
 					this.printDebug("nil");
 					continue;
 				}
-				if(typeof(obj) == "number" || typeof(obj) == "string") {
+				if(typeof(obj) == "number") {
 					this.printDebug(obj);
 					continue;
 				}
-				if(obj instanceof Array) {
-					for(var j=0; j<obj.length; j++) {
-						this.printDebug(obj[j]);
+				if(obj.__className == "String") {
+					this.printDebug(obj.__native);
+					continue;
+				}
+				if(obj.__className == "Array") {
+					for(var j=0; j<obj.__native.length; j++) {
+						this.printDebug(obj.__native[j]);
 					}
 					continue;
 				}
@@ -27,8 +31,8 @@ HotRuby.prototype.classes = {
 				try {
 					this.invokeMethod(obj, "to_ary", [], sf, 0, false);
 					obj = sf.stack[--sf.sp];
-					for(var j=0; j<obj.length; j++) {
-						this.printDebug(obj[j]);
+					for(var j=0; j<obj.__native.length; j++) {
+						this.printDebug(obj.__native[j]);
 					}
 					continue;
 				} catch(e) {
@@ -37,7 +41,7 @@ HotRuby.prototype.classes = {
 
 				this.invokeMethod(obj, "to_s", [], sf, 0, false);
 				obj = sf.stack[--sf.sp];
-				this.printDebug(obj);
+				this.printDebug(obj.__native);
 			}
 		}
 	},
@@ -124,23 +128,23 @@ HotRuby.prototype.classes = {
 		},
 		
 		"<" : function(recver, args) {
-			return recver < args[0];
+			return recver < args[0] ? this.trueObj :  this.falseObj;
 		},
 
 		">" : function(recver, args) {
-			return recver > args[0];
+			return recver > args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"<=" : function(recver, args) {
-			return recver <= args[0];
+			return recver <= args[0] ? this.trueObj :  this.falseObj;
 		},
 
 		">=" : function(recver, args) {
-			return recver >= args[0];
+			return recver >= args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"==" : function(recver, args) {
-			return recver == args[0];
+			return recver == args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"times" : function(recver, args, sf) {
@@ -186,60 +190,60 @@ HotRuby.prototype.classes = {
 		},
 		
 		"<" : function(recver, args) {
-			return recver < args[0];
+			return recver < args[0] ? this.trueObj :  this.falseObj;
 		},
 
 		">" : function(recver, args) {
-			return recver > args[0];
+			return recver > args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"<=" : function(recver, args) {
-			return recver <= args[0];
+			return recver <= args[0] ? this.trueObj :  this.falseObj;
 		},
 
 		">=" : function(recver, args) {
-			return recver >= args[0];
+			return recver >= args[0] ? this.trueObj :  this.falseObj;
 		},
 		
 		"==" : function(recver, args) {
-			return recver == args[0];
+			return recver == args[0] ? this.trueObj :  this.falseObj;
 		}
 	},
 
 	"String" : {
 		"+" : function(recver, args) {
-			return this.createRubyString(recver + args[0]);
+			return this.createRubyString(recver.__native + args[0].__native);
 		},
 		
 		"*" : function(recver, args) {
 			var ary = new Array(args[0]);
 			for(var i=0; i<args[0]; i++) {
-				ary[i] = recver;
+				ary[i] = recver.__native;
 			}
 			return this.createRubyString(ary.join(""));
 		},
 		
 		"==" : function(recver, args) {
-			return recver == args[0];
+			return recver.__native == args[0].__native ? this.trueObj :  this.falseObj;
 		},
 		
 		"[]" : function(recver, args) {
 			if(args.length == 1 && typeof(args[0]) == "number") {
 				var no = args[0];
 				if(no < 0) 
-					no = recver.length + no;
-				if(no < 0 || no >= recver.length)
+					no = recver.__native.length + no;
+				if(no < 0 || no >= recver.__native.length)
 					return null;
-				return recver.charCodeAt(no);
+				return recver.__native.charCodeAt(no);
 			} else if(args.length == 2 && typeof(args[0]) == "number" && typeof(args[1]) == "number") {
 				var start = args[0];
 				if(start < 0) 
-					start = recver.length + start;
-				if(start < 0 || start >= recver.length)
+					start = recver.__native.length + start;
+				if(start < 0 || start >= recver.__native.length)
 					return null;
-				if(args[1] < 0 || start + args[1] > recver.length)
+				if(args[1] < 0 || start + args[1] > recver.__native.length)
 					return null;
-				return this.createRubyString(recver.substr(start, args[1]));
+				return this.createRubyString(recver.__native.substr(start, args[1]));
 			} else {
 				throw "Unsupported String[]";
 			}
@@ -248,40 +252,40 @@ HotRuby.prototype.classes = {
 	
 	"Array" : {
 		"length" : function(recver) {
-			return recver.length;
+			return recver.__native.length;
 		},
 		
 		"size" : function(recver) {
-			return recver.length;
+			return recver.__native.length;
 		},
 		
 		"[]" : function(recver, args) {
-			return recver[args[0]];
+			return recver.__native[args[0]];
 		},
 		
 		"[]=" : function(recver, args) {
-			recver[args[0]] = args[1];
+			recver.__native[args[0]] = args[1];
 		},
 		
 		"join" : function(recver, args) {
-			return this.createRubyString(recver.join(args[0]));
+			return this.createRubyString(recver.__native.join(args[0]));
 		},
 		
 		"to_s" : function(recver, args) {
-			return this.createRubyString(recver.join(args[0]));
+			return this.createRubyString(recver.__native.join(args[0]));
 		}
 	},
 	
 	"Hash" : {
 		"[]" : function(recver, args) {
-			return recver[args[0]];
+			return recver.__native[args[0].__native];
 		},
 		
 		"[]=" : function(recver, args) {
-			if(!(args[0] in recver)) {
+			if(!(args[0].__native in recver.__native)) {
 				recver.__instanceVars.length++;
 			}
-			return (recver[args[0]] = args[1]);
+			return (recver.__native[args[0].__native] = args[1]);
 		},
 		
 		"length" : function(recver) {
@@ -295,7 +299,7 @@ HotRuby.prototype.classes = {
 	
 	"Range" : {
 		"each" : function(recver, args, sf) {
-			if(recver.__instanceVars.exclude_end) {
+			if(recver.__instanceVars.exclude_end == this.trueObj) {
 				for (var i = recver.__instanceVars.first;i < recver.__instanceVars.last; i++) {
 					this.invokeMethod(args[0], "yield", [i], sf, 0, false);
 					sf.sp--;
@@ -330,13 +334,13 @@ HotRuby.prototype.classes = {
 		
 		"length" : function(recver) {
 			with(recver.__instanceVars) {
-				return (last - first + (exclude_end ? 0 : 1));
+				return (last - first + (exclude_end == this.trueObj ? 0 : 1));
 			}
 		},
 		
 		"size" : function(recver) {
 			with(recver.__instanceVars) {
-				return (last - first + (exclude_end ? 0 : 1));
+				return (last - first + (exclude_end == this.trueObj ? 0 : 1));
 			}
 		},
 		
@@ -351,7 +355,7 @@ HotRuby.prototype.classes = {
 				proc = args[1];
 			}
 			
-			if(recver.__instanceVars.exclude_end) {
+			if(recver.__instanceVars.exclude_end == this.trueObj) {
 				for (var i = recver.__instanceVars.first;i < recver.__instanceVars.last; i += step) {
 					this.invokeMethod(proc, "yield", [i], sf, 0, false);
 					sf.sp--;
@@ -371,7 +375,7 @@ HotRuby.prototype.classes = {
 		},
 		
 		"to_s" : function(recver) {
-			return recver.__instanceVars.date.toString();
+			return this.createRubyString(recver.__instanceVars.date.toString());
 		},
 		
 		"to_f" : function(recver) {
