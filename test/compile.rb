@@ -15,7 +15,7 @@ def compile_to_json infile, outfile, prettyfile
   iseq = VM::InstructionSequence.compile_file(infile, OutputCompileOption)
 
   open(outfile, 'w'){|f|
-    f.puts iseq.to_a.to_json
+    f.puts "var src = " + iseq.to_a.to_json + ";"
   }
   if prettyfile
 	open(prettyfile, 'w'){|f|
@@ -42,7 +42,7 @@ opt.parse!(ARGV)
 
 ARGV.each{|file|
   case outfile
-  when /\.json\Z/
+  when /\.js\Z/
     compile_to_json file, outfile, prettyfile
   else
     raise

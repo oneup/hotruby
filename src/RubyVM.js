@@ -9,7 +9,12 @@ var HotRuby = function() {
 	 * Global Variables
 	 * @type Object 
 	 */
-	this.globalVars = {};
+	this.globalVars = {
+		"$native": {
+			__className : "NativeEnviornment",
+			__instanceVars : {}
+		}
+	};
 	/** 
 	 * END blocks
 	 * @type Array 
@@ -20,17 +25,20 @@ var HotRuby = function() {
 	 * @type String
 	 */
 	this.env = "browser";
+	/** nil object */
 	this.nilObj = {
 		__className : "NilClass",
-		__parentClass : this.classes.Object
+		__native : null
 	};
+	/** true object */
 	this.trueObj = {
 		__className : "TrueClass",
-		__parentClass : this.classes.Object
+		__native : true
 	};
+	/** false object */
 	this.falseObj = {
 		__className : "FalseClass",
-		__parentClass : this.classes.Object
+		__native : false
 	};
 	
 	this.checkEnv();
@@ -196,7 +204,7 @@ HotRuby.prototype = {
 			if (!(cmd instanceof Array))
 				continue;
 			
-			//console.log("cmd = " + cmd[0] + ", sp = " + sf.sp);
+			//trace("cmd = " + cmd[0] + ", sp = " + sf.sp);
 			switch (cmd[0]) {
 				case "jump" :
 					ip = opcode.label2ip[cmd[1]];
@@ -473,6 +481,10 @@ HotRuby.prototype = {
 		var invokeClassName = recverClassName;
 		var invokeMethodName = methodName;
 		var func = null;
+
+		// Invoke host method
+		var done = this.invokeNative(recver, methodName, args, sf, recverClassName);
+		if(done) return;
 		
 		if (invokeSuper) {
 			var searchClass = this.classes[recverClassName];
@@ -564,6 +576,177 @@ HotRuby.prototype = {
 		if (methodName == "new") {
 			sf.sp--;
 		}
+	},
+	
+	/**
+	 * Invoke native routine
+	 */
+	invokeNative: function(recver, methodName, args, sf, recverClassName) {
+		switch(recverClassName) {
+			case "NativeEnviornment":
+				this.getNativeEnvVar(recver, methodName, args, sf);
+				return true;
+			case "NativeObject":
+				this.invokeNativeMethod(recver, methodName, args, sf);
+				return true;
+			case "NativeClass":
+				if(methodName == "new") {
+					this.invokeNativeNew(recver, methodName, args, sf);
+				} else {
+					this.invokeNativeMethod(recver, methodName, args, sf);
+				}
+				return true;
+			default:
+				return false;
+		}
+	},
+	
+	/**
+	 * Get variable from NativeEnviornment
+	 */
+	getNativeEnvVar: function(recver, varName, args, sf) {
+		if(varName in recver.__instanceVars) {
+			sf.stack[sf.sp++] = recver.__instanceVars[varName];
+			return;
+		}
+		
+		if(this.env == "browser" || this.env == "rhino") {
+			// Get native global variable
+			var v = eval("(" + varName + ")");
+			if(typeof(v) != "undefined") {
+				sf.stack[sf.sp++] = v;
+				return;
+			}
+		} else if(this.env == "flash") {
+			// Get NativeClass Object
+			var classObj;
+			if(varName in this.nativeClassObjCache) {
+				classObj = this.nativeClassObjCache[varName];
+			} else {
+				for(var i=0; i<this.asPackages.length; i++) {
+					try {
+						classObj = getDefinitionByName(this.asPackages[i] + varName);
+						break;
+					} catch(e) {
+					}
+				}
+				if(classObj == null) {
+					throw "[getNativeEnvVar] Cannot find class: " + varName;
+				}
+				this.nativeClassObjCache[varName] = classObj;
+			}
+			sf.stack[sf.sp++] = {
+				__className : "NativeClass",
+				__native : classObj
+			}
+			return;
+		}
+		
+		throw "[getNativeEnvVar] Cannot get the native variable: " + varName;
+	},
+	
+	/**
+	 * Invoke native method or get native instance variable
+	 */
+	invokeNativeMethod: function(recver, methodName, args, sf) {
+		// Split methodName and operator
+		var op = this.getOperator(methodName);
+		if(op != null) {
+			methodName = methodName.substr(0, methodName.length - op.length);
+		}
+		
+		var ret;
+		if(recver.__native[methodName] instanceof Function) {
+			// Invoke native method
+			if(op != null)
+				throw "[invokeNativeMethod] Unsupported operator: " + op;
+			var convArgs = new Array(args.length);
+			for(var i=0; i<args.length; i++) {
+				convArgs[i] = this.rubyObjectToNative(args[i]);
+			}
+			ret = recver.__native[methodName].apply(recver, convArgs);
+		} else {
+			// Get native instance variable
+			if(op == null) {
+				ret = recver.__native[methodName];
+			} else {
+				switch(op) {
+					case "=": 
+						ret = recver.__native[methodName] = this.rubyObjectToNative(args[0]);
+						break;
+					default:
+						throw "[invokeNativeMethod] Unsupported operator: " + op;
+				}
+			}
+		}
+		sf.stack[sf.sp++] = this.nativeToRubyObject(ret);
+	},
+	
+	/**
+	 * Convert ruby object to native value
+	 * @param v ruby object
+	 */
+	rubyObjectToNative: function(v) {
+		if(typeof(v) != "object") 
+			return v;
+		if(v.__className == "Proc") {
+			var func = function() {
+				var hr = arguments.callee.hr;
+				var proc = arguments.callee.proc;
+				hr.runOpcode(
+					proc.__opcode, 
+					proc.__parentStackFrame.classObj, 
+					proc.__parentStackFrame.methodName, 
+					proc.__parentStackFrame.self, 
+					arguments, 
+					proc.__parentStackFrame,
+					true);
+			};
+			func.hr = this;
+			func.proc = v;
+			return func;
+		}
+		return v.__native;
+	},
+	
+	/**
+	 * Convert native object to ruby object
+	 */
+	nativeToRubyObject: function(ret) {
+		if(typeof(ret) == "number") {
+			return ret;	
+		} else if(typeof(ret) == "string") {
+			return this.createRubyString(ret);	
+		} else {
+			return {
+				__className: "NativeObject",
+				__native: ret
+			};
+		}
+	},
+	
+	/**
+	 * Invoke native "new", and create native instance.
+	 */
+	invokeNativeNew: function(recver, methodName, args, sf) {
+		var obj;
+		switch(args.length) {
+			case 0: obj = new recver.__native(); break; 
+			case 1: obj = new recver.__native(args[0]); break; 
+			case 2: obj = new recver.__native(args[0], args[1]); break; 
+			case 3: obj = new recver.__native(args[0], args[1], args[2]); break; 
+			case 4: obj = new recver.__native(args[0], args[1], args[2], args[3]); break; 
+			case 5: obj = new recver.__native(args[0], args[1], args[2], args[3], args[4]); break; 
+			case 6: obj = new recver.__native(args[0], args[1], args[2], args[3], args[4], args[5]); break;
+			case 7: obj = new recver.__native(args[0], args[1], args[2], args[3], args[4], args[5], args[6]); break;
+			case 8: obj = new recver.__native(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]); break;
+			case 9: obj = new recver.__native(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]); break;
+			default: throw "[invokeNativeNew] Too much arguments: " + args.length;
+		}
+		sf.stack[sf.sp++] = {
+			__className : "NativeObject",
+			__native : obj
+		};
 	},
 	
 	/**
@@ -664,8 +847,7 @@ HotRuby.prototype = {
 	createRubyString : function(str) {
 		return {
 			__native : str,
-			__className : "String",
-			__parentClass : this.classes.Object
+			__className : "String"
 		};
 	},
 	
@@ -679,7 +861,6 @@ HotRuby.prototype = {
 		return {
 			__opcode : opcode,
 			__className : "Proc",
-			__parentClass : this.classes.Object,
 			__parentStackFrame : sf
 		};
 	},
@@ -692,8 +873,7 @@ HotRuby.prototype = {
 	createRubyArray : function(ary) {
 		return {
 			__native : ary,
-			__className : "Array",
-			__parentClass : this.classes.Object
+			__className : "Array"
 		};
 	},
 	
@@ -705,7 +885,6 @@ HotRuby.prototype = {
 	createRubyHash : function(ary) {
 		var hash = {
 			__className : "Hash",
-			__parentClass : this.classes.Object,
 			__instanceVars : {
 				length : ary.length / 2
 			},
@@ -730,7 +909,6 @@ HotRuby.prototype = {
 	createRubyRange : function(last, first, exclude_end) {
 		return {
 			__className : "Range",
-			__parentClass : this.classes.Object,
 			__instanceVars : {
 				first : first,
 				last : last,
@@ -744,7 +922,7 @@ HotRuby.prototype = {
 	 * @param {String} str
 	 */
 	printDebug : function(str) {
-		switch(HotRuby.env) {
+		switch(this.env) {
 			case "browser":
 				var div = document.createElement("div");
 				var text = document.createTextNode(str);
@@ -801,26 +979,70 @@ HotRuby.prototype = {
 		);
 	},
 	
+	/**
+	 * Check whether the environment is Flash, Browser or Rhino.
+	 */
 	checkEnv : function() {
 		if(typeof(_root) != "undefined") {
-			HotRuby.env = "flash";
+			this.env = "flash";
+			// Create debug text field
             HotRuby.debugTextField = new TextField();
             HotRuby.debugTextField.autoSize = TextFieldAutoSize.LEFT;
             _root.addChild(HotRuby.debugTextField);
+            // Define alert
 			alert = function(str) {
 				HotRuby.debugTextField.text += str + "\n";
 			}
+			this.nativeClassObjCache = {};
+			this.asPackages = [
+				"", 
+				"flash.display.", 
+				"flash.text.", 
+				"flash.system.",
+				"flash.geom.",
+				"flash.events.",
+				"flash.accessbility.",
+				"flash.errors.",
+				"flash.external.",
+				"flash.filters.",
+				"flash.media.",
+				"flash.net.",
+				"flash.printing.",
+				"flash.profiler.",
+				"flash.ui.",
+				"flash.utils.",
+				"flash.xml."
+			];
+			// Create _root NativeObject
+			this.globalVars.$native.__instanceVars._root = {
+				__className : "NativeObject",
+				__native : _root
+			}
 		} else if(typeof(alert) == "undefined") {
-			HotRuby.env = "rhino";
+			this.env = "rhino";
+            // Define alert
 			alert = function(str) {
 				print(str);
 			}
 		} else {
-			HotRuby.env = "browser";
+			this.env = "browser";
+			// Get debug DOM
 			this.debugDom = document.getElementById("debug");
 			if (this.debugDom == null) {
 				this.debugDom = document.body;
 			}
+		}
+	},
+	
+	getOperator: function(str) {
+		var result = str.match(/[^\+\-\*\/%=]+([\+\-\*\/%]?=)/);
+		if(result == null || result == false) {
+			return null;
+		}
+		if(result instanceof Array) {
+			return result[1];
+		} else {
+			RegExp.$1;
 		}
 	}
 };

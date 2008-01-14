@@ -83,7 +83,19 @@ HotRuby.prototype.classes = {
 	"NilClass" : {
 	},
 
+	"NativeEnviornment" : {
+	},
+	"NativeObject" : {
+	},
+	"NativeClass" : {
+	},
+	
 	"Proc" : {
+		"initialize" : function(recver, args) {
+			recver.__opcode = args[0].__opcode;
+			recver.__parentStackFrame = args[0].__parentStackFrame;
+		},
+		
 		"yield" : function(recver, args, sf) {
 			this.runOpcode(
 				recver.__opcode, 
@@ -155,7 +167,7 @@ HotRuby.prototype.classes = {
 		},
 		
 		"to_s" : function(recver) {
-			return recver.toString();	
+			return this.createRubyString(recver.toString());	
 		}
 	},
 
