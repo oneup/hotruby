@@ -40,6 +40,10 @@ var HotRuby = function() {
 		__className : "FalseClass",
 		__native : false
 	};
+	this.topObject = {
+		__className : "Object",
+		__native : {}
+	};
 	
 	this.checkEnv();
 };
@@ -114,7 +118,7 @@ HotRuby.prototype = {
 	 */
 	run : function(opcode) {
 		try {
-			this.runOpcode(opcode, this.classes["<global>"], null, null, [], null, false, null);
+			this.runOpcode(opcode, this.classes["<global>"], null, this.topObject, [], null, false, null);
 		} catch(e) {
 			alert(e);
 		}
@@ -399,8 +403,9 @@ HotRuby.prototype = {
 					var args = sf.stack.slice(sf.sp - cmd[2], sf.sp);
 					sf.sp -= cmd[2];
 					var recver = sf.stack[--sf.sp];
-					//if (recver == null || recver == this.nilObj)
-					//	recver = sf.self;
+					if(cmd[4] & HotRuby.VM_CALL_FCALL_BIT) {
+						recver = sf.self;
+					}
 					if(cmd[3] instanceof Array)
 						cmd[3] = this.createRubyProc(cmd[3], sf);
 					if(cmd[3] != null)
@@ -455,13 +460,13 @@ HotRuby.prototype = {
 							this.setConstant(sf, sf.classObj, cmd[1], newClass);
 						}
 						// Run the class definition
-						this.runOpcode(cmd[2], newClass, null, null, [], sf, false, null);
+						this.runOpcode(cmd[2], newClass, null, sf.self, [], sf, false, null);
 					} else if(cmd[3] == 1) {
 						// Object-Specific Classes
 						if(cbaseObj == null || typeof(cbaseObj) != "object")
 							throw "Not supported Object-Specific Classes on Primitive Object"
 						// Run the class definition
-						this.runOpcode(cmd[2], cbaseObj.__className, null, null, [], sf, false, cbaseObj);
+						this.runOpcode(cmd[2], cbaseObj.__className, null, sf.self, [], sf, false, cbaseObj);
 					} else 	if(cmd[3] == 2) {
 						// TODO 
 						throw "Not implemented";

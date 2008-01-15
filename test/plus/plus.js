@@ -1,0 +1,1 @@
+var src = ["YARVInstructionSequence\/SimpleDataFormat",1,1,1,{"arg_size":0,"local_size":3,"stack_max":3},"<main>","plus\\plus.rb","top",["a","b"],0,[],[1,["putobject",1],["setlocal",3],2,["putobject",2],["setlocal",2],3,["putnil"],["getlocal",3],["getlocal",2],["send","+",1,null,0,null],["send","puts",1,null,8,null],["leave"]]];

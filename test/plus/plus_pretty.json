@@ -1,22 +1,24 @@
 [
-	"YARVInstructionSequence/SimpleDataFormat",
+	"YARVInstructionSequence\/SimpleDataFormat",
 	1,
 	1,
 	1,
 	{
-		"arg_size" : 0,
-		"local_size" : 3,
-		"stack_max" : 3
+		"arg_size": 0,
+		"local_size": 3,
+		"stack_max": 3
 	},
 	"<main>",
-	"plustest.rb",
+	"plus\\plus.rb",
 	"top",
 	[
 		"a",
 		"b"
 	],
 	0,
-	[],
+	[
+
+	],
 	[
 		1,
 		[
@@ -52,13 +54,17 @@
 			"send",
 			"+",
 			1,
-			0
+			null,
+			0,
+			null
 		],
 		[
 			"send",
-			"print",
+			"puts",
 			1,
-			8
+			null,
+			8,
+			null
 		],
 		[
 			"leave"
