@@ -310,7 +310,7 @@
 		16,
 		[
 			"putobject",
-			0
+			1
 		],
 		[
 			"setlocal",

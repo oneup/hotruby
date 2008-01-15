@@ -13,7 +13,7 @@ n.import("General.*")
 n.import("TestBed.*")
 
 n.Main.m_fpsCounter = n.FpsCounter.new
-m_currId = 0
+m_currId = 1
 m_currTest = nil
 n.Main.m_sprite = nil
 n.Main.m_aboutText = nil
