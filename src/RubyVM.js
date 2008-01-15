@@ -221,6 +221,19 @@ HotRuby.prototype = {
 						ip = opcode.label2ip[cmd[1]];
 					}
 					break;
+				case "opt_case_dispatch":
+					var v = sf.stack[--sf.sp];
+					if(typeof(v) != "number") v = v.__native;
+					for(var i=0; i<cmd[1].length; i+=2) {
+						if(v === cmd[1][i]) {
+							ip = opcode.label2ip[cmd[1][i+1]];
+							break;
+						}
+					}
+					if(i == cmd[1].length) {
+						ip = opcode.label2ip[cmd[2]];
+					}
+					break;
 				case "leave" :
 					return;
 				case "putnil" :
@@ -386,8 +399,8 @@ HotRuby.prototype = {
 					var args = sf.stack.slice(sf.sp - cmd[2], sf.sp);
 					sf.sp -= cmd[2];
 					var recver = sf.stack[--sf.sp];
-					if (recver == null || recver == this.nilObj)
-						recver = sf.self;
+					//if (recver == null || recver == this.nilObj)
+					//	recver = sf.self;
 					if(cmd[3] instanceof Array)
 						cmd[3] = this.createRubyProc(cmd[3], sf);
 					if(cmd[3] != null)
@@ -504,8 +517,10 @@ HotRuby.prototype = {
 				func = recver.__methods[methodName];
 			}
 			if (func == null) {
+				//trace("recverClassName = " + recverClassName);
 				var searchClass = this.classes[recverClassName];
 				while (true) {
+					//trace("methodName = " + methodName);
 					// Search method in class
 					func = searchClass[methodName];
 					if (func != null) break;
@@ -521,11 +536,13 @@ HotRuby.prototype = {
 					// Search Parent class
 					if ("__parentClass" in searchClass) {
 						searchClass = searchClass.__parentClass;
+						//trace("searchClass = " + searchClass);
 						if(searchClass == null) {
 							func = null;
 							break;
 						}
 						invokeClassName = searchClass.__className;
+						//trace("invokeClassName = " + invokeClassName);
 						continue;
 					}
 					break;
@@ -605,6 +622,16 @@ HotRuby.prototype = {
 	 * Get variable from NativeEnviornment
 	 */
 	getNativeEnvVar: function(recver, varName, args, sf) {
+		//trace(varName);
+		if(this.env == "flash" && varName == "import") {
+			var imp = args[0].__native;
+			if(imp.charAt(imp.length - 1) != "*")
+				throw "[getNativeEnvVar] Param must ends with * : " + imp;
+			this.asPackages.push(imp.substr(0, imp.length - 1));
+			sf.stack[sf.sp++] = this.nilObj;
+			return;
+		}
+		
 		if(varName in recver.__instanceVars) {
 			sf.stack[sf.sp++] = recver.__instanceVars[varName];
 			return;
@@ -723,6 +750,15 @@ HotRuby.prototype = {
 	 * @param v native object
 	 */
 	nativeToRubyObject: function(v) {
+		if(v === null) {
+			return this.nilObj;
+		}
+		if(v === true) {
+			return this.trueObj;
+		}
+		if(v === false) {
+			return this.falseObj;
+		}
 		if(typeof(v) == "number") {
 			return v;	
 		}
@@ -755,6 +791,7 @@ HotRuby.prototype = {
 	 */
 	invokeNativeNew: function(recver, methodName, args, sf) {
 		var obj;
+		var args = this.rubyObjectAryToNativeAry(args);
 		switch(args.length) {
 			case 0: obj = new recver.__native(); break; 
 			case 1: obj = new recver.__native(args[0]); break; 
@@ -1019,25 +1056,7 @@ HotRuby.prototype = {
 				HotRuby.debugTextField.text += str + "\n";
 			}
 			this.nativeClassObjCache = {};
-			this.asPackages = [
-				"", 
-				"flash.display.", 
-				"flash.text.", 
-				"flash.system.",
-				"flash.geom.",
-				"flash.events.",
-				"flash.accessbility.",
-				"flash.errors.",
-				"flash.external.",
-				"flash.filters.",
-				"flash.media.",
-				"flash.net.",
-				"flash.printing.",
-				"flash.profiler.",
-				"flash.ui.",
-				"flash.utils.",
-				"flash.xml."
-			];
+			this.asPackages = [""];
 			// Create _root NativeObject
 			this.globalVars.$native.__instanceVars._root = {
 				__className : "NativeObject",

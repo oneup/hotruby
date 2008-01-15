@@ -1,6 +1,20 @@
 // The license of this source is "Ruby License"
 HotRuby.prototype.classes = {
 	"<global>" : {
+	},
+
+	"Object" : {
+		"==" : function(recver, args) {
+			return recver == args[0] ? this.trueObj : this.falseObj;	
+		},
+		
+		"to_s" : function(recver) {
+			if(typeof(recver) == "number")
+				return recver.toString();
+			else
+				return recver.__native.toString();
+		},
+		
 		"puts" : function(recver, args, sf) {
 			if(args.length == 0) {
 				this.printDebug("");
@@ -43,12 +57,6 @@ HotRuby.prototype.classes = {
 				obj = sf.stack[--sf.sp];
 				this.printDebug(obj.__native);
 			}
-		}
-	},
-
-	"Object" : {
-		"to_s" : function(recver) {
-			return recver.toString();
 		}
 	},
 

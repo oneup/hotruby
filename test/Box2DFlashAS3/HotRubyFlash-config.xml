@@ -1,0 +1,13 @@
+<flex-config>
+	<default-size>
+		<width>640</width>
+		<height>360</height>
+	</default-size>
+	<output>Box2DFlashAS3.swf</output>
+	<default-background-color>#414647</default-background-color>
+	<compiler>
+		<include-libraries>
+			<library>Box2DFlashAS3.swc</library>
+		</include-libraries>
+	</compiler>
+</flex-config>

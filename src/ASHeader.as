@@ -1,6 +1,6 @@
 package {
     import flash.display.*; 
-	public class HotRubyFlash extends Sprite {
+	public class HotRubyFlash extends MovieClip {
 		public function HotRubyFlash() {
 			_root = this;
 			new HotRuby().run(src);
