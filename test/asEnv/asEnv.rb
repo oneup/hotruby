@@ -1,20 +1,38 @@
-n = $native
-n.import("flash.text.*")
-n.import("flash.system.*")
+$n = $native
+$n.import("flash.text.*")
+$n.import("flash.system.*")
 
-textField = n.TextField.new
-textField.autoSize = n.TextFieldAutoSize.LEFT
-textField.text = "Memory: " + n.System.totalMemory.to_s + " bytes\n"
-n._root.addChild(textField)
+class ASEnv 
+	def initialize
+		showMemory
+		drawCircle
+		addButton
+	end
 
-g = n._root.graphics
-g.beginFill 0xFF0000
-g.drawCircle 100, 100, 100
-g.endFill
+	# TextField for memory
+	def showMemory
+		@textField = $n.TextField.new
+		@textField.autoSize = $n.TextFieldAutoSize.LEFT
+		@textField.text = "Memory: " + $n.System.totalMemory.to_s + " bytes\n"
+		@textField.x = 400
+		$n._root.addChild(@textField)
+	end
+	
+	def drawCircle
+		g = $n._root.graphics
+		g.beginFill 0xFF0000
+		g.drawCircle 100, 100, 100
+		g.endFill
 
-g.beginFill 0x00FF00, 0.5
-g.drawCircle 200, 200, 100
-g.endFill
+		g.beginFill 0x00FF00, 0.5
+		g.drawCircle 200, 200, 100
+		g.endFill
+	end
+	
+	def addButton
+		callback = Proc.new {|evt| @textField.text += "type: " + evt.type + "\n" }
+		@textField.addEventListener "click", callback
+	end
+end
 
-callback = Proc.new {|evt| textField.text += "type: " + evt.type + "\n" }
-textField.addEventListener "click", callback
+ASEnv.new
