@@ -5,13 +5,14 @@
 	1,
 	{
 		"arg_size": 0,
-		"local_size": 4,
+		"local_size": 5,
 		"stack_max": 4
 	},
 	"<main>",
 	"asEnv\\asEnv.rb",
 	"top",
 	[
+		"n",
 		"textField",
 		"g",
 		"callback"
@@ -21,9 +22,9 @@
 		[
 			"break",
 			null,
-			"label_189",
-			"label_198",
-			"label_198",
+			"label_215",
+			"label_224",
+			"label_224",
 			0
 		]
 	],
@@ -32,6 +33,55 @@
 		[
 			"getglobal",
 			"$native"
+		],
+		[
+			"setlocal",
+			5
+		],
+		2,
+		[
+			"getlocal",
+			5
+		],
+		[
+			"putstring",
+			"flash.text.*"
+		],
+		[
+			"send",
+			"import",
+			1,
+			null,
+			0,
+			null
+		],
+		[
+			"pop"
+		],
+		3,
+		[
+			"getlocal",
+			5
+		],
+		[
+			"putstring",
+			"flash.system.*"
+		],
+		[
+			"send",
+			"import",
+			1,
+			null,
+			0,
+			null
+		],
+		[
+			"pop"
+		],
+		5,
+		[
+			"getlocal",
+			5
 		],
 		[
 			"send",
@@ -53,14 +103,14 @@
 			"setlocal",
 			4
 		],
-		2,
+		6,
 		[
 			"getlocal",
 			4
 		],
 		[
-			"getglobal",
-			"$native"
+			"getlocal",
+			5
 		],
 		[
 			"send",
@@ -89,7 +139,7 @@
 		[
 			"pop"
 		],
-		3,
+		7,
 		[
 			"getlocal",
 			4
@@ -99,8 +149,8 @@
 			"Memory: "
 		],
 		[
-			"getglobal",
-			"$native"
+			"getlocal",
+			5
 		],
 		[
 			"send",
@@ -157,10 +207,10 @@
 		[
 			"pop"
 		],
-		4,
+		8,
 		[
-			"getglobal",
-			"$native"
+			"getlocal",
+			5
 		],
 		[
 			"send",
@@ -185,10 +235,10 @@
 		[
 			"pop"
 		],
-		6,
+		10,
 		[
-			"getglobal",
-			"$native"
+			"getlocal",
+			5
 		],
 		[
 			"send",
@@ -210,7 +260,7 @@
 			"setlocal",
 			3
 		],
-		7,
+		11,
 		[
 			"getlocal",
 			3
@@ -230,74 +280,6 @@
 		[
 			"pop"
 		],
-		8,
-		[
-			"getlocal",
-			3
-		],
-		[
-			"putobject",
-			100
-		],
-		[
-			"putobject",
-			100
-		],
-		[
-			"putobject",
-			100
-		],
-		[
-			"send",
-			"drawCircle",
-			3,
-			null,
-			0,
-			null
-		],
-		[
-			"pop"
-		],
-		9,
-		[
-			"getlocal",
-			3
-		],
-		[
-			"send",
-			"endFill",
-			0,
-			null,
-			0,
-			null
-		],
-		[
-			"pop"
-		],
-		11,
-		[
-			"getlocal",
-			3
-		],
-		[
-			"putobject",
-			65280
-		],
-		[
-			"putobject",
-			0.5
-		],
-		[
-			"send",
-			"beginFill",
-			2,
-			null,
-			0,
-			null
-		],
-		[
-			"pop"
-		],
 		12,
 		[
 			"getlocal",
@@ -305,11 +287,11 @@
 		],
 		[
 			"putobject",
-			200
+			100
 		],
 		[
 			"putobject",
-			200
+			100
 		],
 		[
 			"putobject",
@@ -342,8 +324,76 @@
 		[
 			"pop"
 		],
-		"label_189",
 		15,
+		[
+			"getlocal",
+			3
+		],
+		[
+			"putobject",
+			65280
+		],
+		[
+			"putobject",
+			0.5
+		],
+		[
+			"send",
+			"beginFill",
+			2,
+			null,
+			0,
+			null
+		],
+		[
+			"pop"
+		],
+		16,
+		[
+			"getlocal",
+			3
+		],
+		[
+			"putobject",
+			200
+		],
+		[
+			"putobject",
+			200
+		],
+		[
+			"putobject",
+			100
+		],
+		[
+			"send",
+			"drawCircle",
+			3,
+			null,
+			0,
+			null
+		],
+		[
+			"pop"
+		],
+		17,
+		[
+			"getlocal",
+			3
+		],
+		[
+			"send",
+			"endFill",
+			0,
+			null,
+			0,
+			null
+		],
+		[
+			"pop"
+		],
+		"label_215",
+		19,
 		[
 			"putnil"
 		],
@@ -402,7 +452,7 @@
 				],
 				[
 					"label_0",
-					15,
+					19,
 					[
 						"getdynamic",
 						4,
@@ -481,12 +531,12 @@
 			0,
 			null
 		],
-		"label_198",
+		"label_224",
 		[
 			"setlocal",
 			2
 		],
-		16,
+		20,
 		[
 			"getlocal",
 			4

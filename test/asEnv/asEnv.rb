@@ -1,9 +1,13 @@
-textField = $native.TextField.new
-textField.autoSize = $native.TextFieldAutoSize.LEFT
-textField.text = "Memory: " + $native.System.totalMemory.to_s + " bytes\n"
-$native._root.addChild(textField)
+n = $native
+n.import("flash.text.*")
+n.import("flash.system.*")
 
-g = $native._root.graphics
+textField = n.TextField.new
+textField.autoSize = n.TextFieldAutoSize.LEFT
+textField.text = "Memory: " + n.System.totalMemory.to_s + " bytes\n"
+n._root.addChild(textField)
+
+g = n._root.graphics
 g.beginFill 0xFF0000
 g.drawCircle 100, 100, 100
 g.endFill

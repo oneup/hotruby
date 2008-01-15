@@ -1,0 +1,8 @@
+<flex-config>
+	<default-size>
+		<width>640</width>
+		<height>480</height>
+	</default-size>
+	<output>asEnv.swf</output>
+	<default-background-color>#FFFFFF</default-background-color>
+</flex-config>
