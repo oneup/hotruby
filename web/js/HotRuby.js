@@ -646,7 +646,16 @@ HotRuby.prototype = {
 			// Get native global variable
 			var v = eval("(" + varName + ")");
 			if(typeof(v) != "undefined") {
-				sf.stack[sf.sp++] = v;
+				if(typeof(v) == "function") {
+					var convArgs = this.rubyObjectAryToNativeAry(args);
+					var ret = v.apply(null, convArgs);
+					sf.stack[sf.sp++] = this.nativeToRubyObject(ret);
+				} else {
+					sf.stack[sf.sp++] = {
+						__className: "NativeObject",
+						__native: v
+					}
+				}
 				return;
 			}
 		} else if(this.env == "flash") {
@@ -693,7 +702,7 @@ HotRuby.prototype = {
 			if(op != null)
 				throw "[invokeNativeMethod] Unsupported operator: " + op;
 			var convArgs = this.rubyObjectAryToNativeAry(args);
-			ret = recver.__native[methodName].apply(recver, convArgs);
+			ret = recver.__native[methodName].apply(recver.__native, convArgs);
 		} else {
 			// Get native instance variable
 			if(op == null) {
