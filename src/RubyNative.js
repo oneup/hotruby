@@ -7,9 +7,9 @@ HotRuby.prototype.classes = {
 		
 		"to_s" : function(recver) {
 			if(typeof(recver) == "number")
-				return recver.toString();
+				return this.createRubyString(recver.toString());
 			else
-				return recver.__native.toString();
+				return this.createRubyString(recver.__native.toString());
 		},
 		
 		"puts" : function(recver, args, sf) {
