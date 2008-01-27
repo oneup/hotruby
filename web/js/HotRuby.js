@@ -1339,7 +1339,10 @@ HotRuby.prototype.classes = {
 
 	"String" : {
 		"+" : function(recver, args) {
-			return this.createRubyString(recver.__native + args[0].__native);
+			if(typeof(args[0]) == "object")
+				return this.createRubyString(recver.__native + args[0].__native);
+			else
+				return this.createRubyString(recver.__native + args[0]);
 		},
 		
 		"*" : function(recver, args) {

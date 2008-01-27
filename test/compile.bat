@@ -7,5 +7,6 @@ goto end
 
 :main
 ruby compile.rb %1\%1.rb -o %1\%1.js -p %1\%1_pretty.json
+copy %1\%1.js ..\web\js\test
 
 :end
