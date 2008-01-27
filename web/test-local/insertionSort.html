@@ -1,11 +1,43 @@
 <html>
 <head>
 	<title>Insertion sort - HotRuby - Ruby on JavaScript</title>
+	<link href="../css/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/prettify.js"></script>
 	<script type="text/javascript" src="../js/HotRuby.js"></script>
 	<script type="text/javascript" src="../js/test/InsertionSort.js"></script>
 </head>
-<body onload="new HotRuby().run(src);">
-	<h1>Insertion Sort - HotRuby</h1>
-	<div id="debug"></div>
+<body onload="prettyPrint(); new HotRuby().run(src);">
+	<h1>Insertion Sort - HotRuby(Ruby on JavaScript)</h1>
+	<div>Result:</div>
+	<div id="debug" class="result" style="color:black"></div>
+	<br />
+	<div>Source:<pre class="prettyprint">
+class InsertionSort
+	msg = "[ Insertion Sort ]"
+	puts msg
+	
+	def sort ary
+		puts "Before insertion sort:"
+		puts ary
+	
+		for i in 1..(ary.length-1) do
+			n = i
+			while n >= 1 && ary[n] < ary[n - 1] do
+				if ary[n] < ary[n - 1]
+					tmp = ary[n]
+					ary[n] = ary[n - 1]
+					ary[n - 1] = tmp
+				end
+				n -= 1
+			end
+		end
+		
+		puts "After insertion sort:"
+		puts ary
+	end
+end
+
+InsertionSort.new.sort [3, 6, 2, 5, 3, 7, 1, 8]
+</pre></div>
 </body>
 </html>

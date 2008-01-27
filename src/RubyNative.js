@@ -1,8 +1,5 @@
 // The license of this source is "Ruby License"
 HotRuby.prototype.classes = {
-	"<global>" : {
-	},
-
 	"Object" : {
 		"==" : function(recver, args) {
 			return recver == args[0] ? this.trueObj : this.falseObj;	
@@ -414,12 +411,9 @@ HotRuby.prototype.classes = {
 		if(!("__classVars" in classes[className]))
 			classes[className].__classVars = {};
 	}
-	
-	classes.Object.__parentClass = classes["<global>"];
-	classes["<global>"].__parentClass = null;
+	classes.Object.__parentClass = null;
 	
 	for (var className in classes) {
 		classes.Object.__constantVars[className] = classes[className];
 	}
-	delete classes.Object.__constantVars["<global>"];
 })();

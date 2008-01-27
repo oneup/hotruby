@@ -44,6 +44,7 @@ var HotRuby = function() {
 		__className : "Object",
 		__native : {}
 	};
+	this.topSF = null;
 	
 	this.checkEnv();
 };
@@ -118,7 +119,7 @@ HotRuby.prototype = {
 	 */
 	run : function(opcode) {
 		try {
-			this.runOpcode(opcode, this.classes["<global>"], null, this.topObject, [], null, false, null);
+			this.runOpcode(opcode, this.classes.Object, null, this.topObject, [], null, false, null);
 		} catch(e) {
 			alert(e);
 		}
@@ -151,6 +152,8 @@ HotRuby.prototype = {
 		sf.parentStackFrame = parentSF;
 		sf.isProc = isProc;
 		sf.cbaseObj = cbaseObj;
+		
+		if(this.topSF == null) this.topSF = sf;
 		
 		// Copy args to localVars. Fill from last.
 		for (var i = 0;i < opcode[4].arg_size; i++) {
@@ -840,9 +843,6 @@ HotRuby.prototype = {
 			// TODO
 			throw "[setConstant] Not implemented";
 		}
-		// Const in <global> belongs to Object
-		if(classObj.__className == "<global>")
-			classObj = this.classes.Object;
 		classObj.__constantVars[constName] = constValue;
 	},
 	
@@ -859,7 +859,7 @@ HotRuby.prototype = {
 			var isFound = false;
 			// Search outer(parentStackFrame)
 			for (var checkSF = sf;!isFound; checkSF = checkSF.parentStackFrame) {
-				if (checkSF.classObj.__className == "<global>") {
+				if (checkSF == this.topSF) {
 					break;
 				}
 				if (constName in checkSF.classObj.__constantVars) {
@@ -869,7 +869,7 @@ HotRuby.prototype = {
 			}
 			// Search parent class
 			if (!isFound) {
-				for (classObj = sf.classObj;classObj.__className != "<global>";) {
+				for (classObj = sf.classObj;classObj != this.classes.Object;) {
 					if (constName in classObj.__constantVars) {
 						isFound = true;
 						break;
@@ -887,9 +887,6 @@ HotRuby.prototype = {
 		}
 		if (classObj == null || classObj == this.nilObj)
 			throw "[getConstant] Cannot find constant : " + constName;
-		// Const in <global> belongs to Object
-		if (classObj.__className == "<global>")
-			classObj = this.classes.Object;
 		return classObj.__constantVars[constName];
 	},
 	
@@ -900,16 +897,12 @@ HotRuby.prototype = {
 	 */
 	getClassName : function(obj) {
 		if (obj == null)
-			return "<global>";
+			return "Object";
 		switch (typeof(obj)) {
 			case "object" :
 				return obj.__className;
 			case "number" :
 				return "Float";
-//			case "string" :
-//				return "String";
-//			case "boolean" :
-//				return obj ? "TrueClass" : "FalseClass";
 			default :
 				throw "[getClassName] unknown type : " + typeof(obj);
 		}
@@ -1117,9 +1110,6 @@ HotRuby.VM_CALL_VCALL_BIT = 16;
 
 // The license of this source is "Ruby License"
 HotRuby.prototype.classes = {
-	"<global>" : {
-	},
-
 	"Object" : {
 		"==" : function(recver, args) {
 			return recver == args[0] ? this.trueObj : this.falseObj;	
@@ -1531,12 +1521,9 @@ HotRuby.prototype.classes = {
 		if(!("__classVars" in classes[className]))
 			classes[className].__classVars = {};
 	}
-	
-	classes.Object.__parentClass = classes["<global>"];
-	classes["<global>"].__parentClass = null;
+	classes.Object.__parentClass = null;
 	
 	for (var className in classes) {
 		classes.Object.__constantVars[className] = classes[className];
 	}
-	delete classes.Object.__constantVars["<global>"];
 })();
