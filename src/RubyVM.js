@@ -122,6 +122,7 @@ HotRuby.prototype = {
 			this.runOpcode(opcode, this.classes.Object, null, this.topObject, [], null, false, null);
 		} catch(e) {
 			alert(e);
+      if(console) console.log(e) // more details than alert
 		}
 	},
 	
