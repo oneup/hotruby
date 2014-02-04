@@ -122,6 +122,7 @@ HotRuby.prototype = {
 			this.runOpcode(opcode, this.classes.Object, null, this.topObject, [], null, false, null);
 		} catch(e) {
 			alert(e);
+      if(console) console.log(e) // more details than alert
 		}
 	},
 	
@@ -184,7 +185,7 @@ HotRuby.prototype = {
 	 */
 	mainLoop : function(opcode, sf) {
 		// Create label to ip
-		if(!("label2ip" in opcode)) {
+		if(typeof(opcode.label2ip) != 'undefined') { // label2ip in opcode would throw exception
 			opcode.label2ip = {};
 			for (var ip = 0;ip < opcode.length; ip++) {
 				// If "cmd is a String then it is a jump label
